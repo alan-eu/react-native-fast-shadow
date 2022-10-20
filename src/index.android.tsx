@@ -16,6 +16,10 @@ type ShadowViewProps = ViewProps & {
 
 const ShadowView = requireNativeComponent<ShadowViewProps>('FastShadowView');
 
+// Renderscript does not support a blur radius greater than 25.
+// Note for later: we could probably support them with downscaling
+const maxShadowRadius = 25;
+
 export const ShadowedView = ({ style, ...viewProps }: ViewProps) => {
   const [outerStyle, innerStyle] = splitStyle(style);
   const {
@@ -24,24 +28,25 @@ export const ShadowedView = ({ style, ...viewProps }: ViewProps) => {
     shadowColor = 'black',
     shadowOffset = { width: 0, height: -3 },
   } = outerStyle;
-  const shadowInset = Math.ceil(shadowRadius);
+  const radius = Math.min(Math.max(shadowRadius, 0), maxShadowRadius);
+  const inset = Math.ceil(radius);
 
   return (
     <View style={outerStyle} pointerEvents="box-none">
       <ShadowView
         style={{
           position: 'absolute',
-          left: -shadowInset,
-          right: -shadowInset,
-          top: -shadowInset,
-          bottom: -shadowInset,
+          left: -inset,
+          right: -inset,
+          top: -inset,
+          bottom: -inset,
           opacity: shadowOpacity,
           transform: [
             { translateX: shadowOffset.width },
             { translateY: shadowOffset.height },
           ],
         }}
-        radius={shadowRadius}
+        radius={radius}
         color={shadowColor}
         pointerEvents="none"
       />
@@ -53,7 +58,7 @@ export const ShadowedView = ({ style, ...viewProps }: ViewProps) => {
 function splitStyle(
   style: StyleProp<ViewStyle> | undefined
 ): [ViewStyle, ViewStyle] {
-  const outerStyleProps: (keyof ViewStyle)[] = [
+  const outerStyleProps = [
     'alignSelf',
     'display',
     'flex',

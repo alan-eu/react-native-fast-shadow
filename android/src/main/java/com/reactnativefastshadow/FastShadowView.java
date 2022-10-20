@@ -36,12 +36,14 @@ public class FastShadowView extends View {
     int height = pxToDp(getHeight()) - 2 * inset;
     Bitmap shadowBitmap = ShadowBitmap.createShadowBitmap(getContext(), width, height, radius);
 
-    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    paint.setColor(color);
-    canvas.drawBitmap(shadowBitmap, null, new Rect(0, 0, getWidth(), getHeight()), null);
+    if (shadowBitmap != null) {
+      Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      paint.setColor(color);
+      canvas.drawBitmap(shadowBitmap, null, new Rect(0, 0, getWidth(), getHeight()), paint);
+    }
   }
 
-  public int pxToDp(int px) {
+  private int pxToDp(int px) {
     DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
     return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
   }
