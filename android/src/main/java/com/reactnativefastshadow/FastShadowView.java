@@ -1,10 +1,9 @@
 package com.reactnativefastshadow;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.View;
 
@@ -39,12 +38,12 @@ public class FastShadowView extends View {
     int inset = (int)Math.ceil(radius);
     int width = pxToDp(getWidth()) - 2 * inset;
     int height = pxToDp(getHeight()) - 2 * inset;
-    Bitmap shadowBitmap = ShadowBitmap.createShadowBitmap(getContext(), width, height, borderRadii, radius);
+    Drawable drawable = ShadowBitmap.createShadowDrawable(getContext(), width, height, borderRadii, radius);
 
-    if (shadowBitmap != null) {
-      Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-      paint.setColor(color);
-      canvas.drawBitmap(shadowBitmap, null, new Rect(0, 0, getWidth(), getHeight()), paint);
+    if (drawable != null) {
+      drawable.setBounds(new Rect(0, 0, getWidth(), getHeight()));
+      drawable.setTint(color);
+      drawable.draw(canvas);
     }
   }
 
