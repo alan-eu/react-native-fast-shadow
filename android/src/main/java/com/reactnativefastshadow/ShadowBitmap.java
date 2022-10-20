@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.NinePatch;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.renderscript.Allocation;
@@ -18,10 +20,17 @@ import java.nio.ByteOrder;
 
 public class ShadowBitmap {
   public static Drawable createShadowDrawable(Context context, int width, int height, float[] borderRadii, float blurRadius) {
-    int inset = (int)Math.ceil(blurRadius);
     NinePatchInsets ninePatchInsets = getNinePatchInsets(borderRadii, blurRadius);
-    int bitmapWidth = ninePatchInsets.left + ninePatchInsets.right + 1;
-    int bitmapHeight = ninePatchInsets.top + ninePatchInsets.bottom + 1;
+    int ninePatchWidth = ninePatchInsets.left + ninePatchInsets.right + 1;
+    int ninePatchHeight = ninePatchInsets.top + ninePatchInsets.bottom + 1;
+    boolean useNinePatchHorizontally = width >= ninePatchWidth;
+    boolean useNinePatchVertically = height >= ninePatchHeight;
+
+    int inset = (int)Math.ceil(blurRadius);
+    int shapeWidth = useNinePatchHorizontally ? ninePatchWidth : width;
+    int shapeHeight = useNinePatchVertically ? ninePatchHeight : height;
+    int bitmapWidth = shapeWidth + 2 * inset;
+    int bitmapHeight = shapeHeight + 2 * inset;
 
     Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ALPHA_8);
     bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
@@ -30,24 +39,32 @@ public class ShadowBitmap {
     Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     paint.setColor(0xff000000);
     Path roundedRect = new Path();
-    roundedRect.addRoundRect(inset, inset, bitmapWidth - inset, bitmapHeight - inset, new float[]{
-      borderRadii[0],
-      borderRadii[0],
-      borderRadii[1],
-      borderRadii[1],
-      borderRadii[2],
-      borderRadii[2],
-      borderRadii[3],
-      borderRadii[3],
-    }, Path.Direction.CW);
+    roundedRect.addRoundRect(
+      new RectF(inset, inset, bitmapWidth - inset, bitmapHeight - inset),
+      new float[]{
+        borderRadii[0],
+        borderRadii[0],
+        borderRadii[1],
+        borderRadii[1],
+        borderRadii[2],
+        borderRadii[2],
+        borderRadii[3],
+        borderRadii[3],
+      },
+      Path.Direction.CW
+    );
     canvas.drawPath(roundedRect, paint);
 
     try {
       if (blurRadius > 0) {
         blurBitmap(context, bitmap, blurRadius);
       }
-      NinePatch ninePatch = createNinePatch(bitmap, getNinePatchInsets(borderRadii, blurRadius));
-      return new NinePatchDrawable(context.getResources(), ninePatch);
+      if (useNinePatchHorizontally || useNinePatchVertically) {
+        NinePatch ninePatch = createNinePatch(bitmap, ninePatchInsets, inset, useNinePatchHorizontally, useNinePatchVertically);
+        return new NinePatchDrawable(context.getResources(), ninePatch);
+      } else {
+        return new BitmapDrawable(context.getResources(), bitmap);
+      }
     } catch (Exception e) {
       bitmap.recycle();
       return null;
@@ -76,36 +93,46 @@ public class ShadowBitmap {
     }
   }
 
-  private static NinePatch createNinePatch(Bitmap bitmap, NinePatchInsets insets) {
-    // The format of the chunk param is not documented by Android.
-    // Here, it is inferred from Android source code:
-    // https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/include/androidfw/ResourceTypes.h#80
-    // https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/ResourceTypes.cpp#221
-    ByteBuffer chunk = ByteBuffer.allocate(4 + (7 * 4) + (4 * 4) + (9 * 4));
+  // The format of the chunk param is not documented by Android.
+  // Here, it is inferred from Android source code:
+  // https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/include/androidfw/ResourceTypes.h#80
+  // https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/ResourceTypes.cpp#221
+  private static NinePatch createNinePatch(Bitmap bitmap, NinePatchInsets insets, int extraInset, boolean horizontally, boolean vertically) {
+    int numXDivs = horizontally ? 2 : 0;
+    int numYDivs = vertically ? 2 : 0;
+    int numColors = (numXDivs + 1) * (numYDivs + 1);
+    boolean isNinePatch = horizontally && vertically;
+
+    int length = 4 + (4 * 4) + ((numXDivs + numYDivs) * 4) + (numColors * 4) + (3 * 4); // Header + paddings + divs + colors + unused bytes
+    ByteBuffer chunk = ByteBuffer.allocate(length);
     chunk.order(ByteOrder.nativeOrder());
-    chunk.put((byte) 1); // wasDeserialized. Not sure if it should be 1 or 0...
-    chunk.put((byte) 2); // numXDivs: 2 as we want a 9-patch => 3 horizontal segments and so, 3 - 1 dividers
-    chunk.put((byte) 2); // numYDivs: 2 as we want a 9-patch => 3 vertical segments and so, 3 - 1 dividers
-    chunk.put((byte) 9); // numColors: 9 as there are 9 segments in a 9-patch
+    chunk.put((byte) 1); // wasDeserialized
+    chunk.put((byte) numXDivs); // numXDivs
+    chunk.put((byte) numYDivs); // numYDivs
+    chunk.put((byte) numColors); // numColors
     chunk.position(chunk.position() + 8); // skip 8 bytes
-    chunk.putInt(0); // paddingLeft: 0 as there are no children so it doesn't matter
-    chunk.putInt(0); // paddingRight: 0 as there are no children so it doesn't matter
-    chunk.putInt(0); // paddingTop: 0 as there are no children so it doesn't matter
-    chunk.putInt(0); // paddingBottom: 0 as there are no children so it doesn't matter
+    chunk.putInt(0); // paddingLeft: unused as there will be no child views
+    chunk.putInt(0); // paddingRight: unused as there will be no child views
+    chunk.putInt(0); // paddingTop: unused as there will be no child views
+    chunk.putInt(0); // paddingBottom: unused as there will be no child views
     chunk.position(chunk.position() + 4); // skip 4 bytes
-    chunk.putInt(insets.left); // xDivs[0]
-    chunk.putInt(bitmap.getWidth() - insets.right); // xDivs[1]
-    chunk.putInt(insets.top); // yDivs[0]
-    chunk.putInt(bitmap.getHeight() - insets.bottom); // yDivs[1]
-    chunk.putInt(0x1); // top-left corner color: 0x1 as it's not a solid color
-    chunk.putInt(0x1); // top edge color: 0x1 as it's not a solid color
-    chunk.putInt(0x1); // top-right corner color: 0x1 as it's not a solid color
-    chunk.putInt(0x1); // left edge color: 0x1 as it's not a solid color
-    chunk.putInt(0xff000000); // center color: this is opaque black
-    chunk.putInt(0x1); // right edge color: 0x1 as it's not a solid color
-    chunk.putInt(0x1); // bottom-left corner color: 0x1 as it's not a solid color
-    chunk.putInt(0x1); // bottom edge color: 0x1 as it's not a solid color
-    chunk.putInt(0x1); // bottom-right corner color: 0x1 as it's not a solid color
+    if (horizontally) {
+      chunk.putInt(insets.left + extraInset); // xDivs[0]
+      chunk.putInt(bitmap.getWidth() - insets.right - extraInset); // xDivs[1]
+    }
+    if (vertically) {
+      chunk.putInt(insets.top + extraInset); // yDivs[0]
+      chunk.putInt(bitmap.getHeight() - insets.bottom - extraInset); // yDivs[1]
+    }
+    if (isNinePatch) chunk.putInt(0x1); // top-left corner color: 0x1 as it's not a solid color
+    if (vertically) chunk.putInt(0x1); // top edge color: 0x1 as it's not a solid color
+    if (isNinePatch) chunk.putInt(0x1); // top-right corner color: 0x1 as it's not a solid color
+    if (horizontally) chunk.putInt(0x1); // left edge color: 0x1 as it's not a solid color
+    chunk.putInt(isNinePatch ? 0xff000000 : 0x1); // center: this is solid black in 9-patches
+    if (horizontally) chunk.putInt(0x1); // right edge color: 0x1 as it's not a solid color
+    if (isNinePatch) chunk.putInt(0x1); // bottom-left corner color: 0x1 as it's not a solid color
+    if (vertically) chunk.putInt(0x1); // bottom edge color: 0x1 as it's not a solid color
+    if (isNinePatch) chunk.putInt(0x1); // bottom-right corner color: 0x1 as it's not a solid color
     return new NinePatch(bitmap, chunk.array());
   }
 
@@ -119,7 +146,7 @@ public class ShadowBitmap {
   }
 
   private static int getNinePatchInsetForCorner(float borderRadius, float blurRadius) {
-    return 2 * (int) Math.ceil(blurRadius) + (int) Math.ceil(borderRadius);
+    return (int) Math.ceil(blurRadius + borderRadius);
   }
 }
 

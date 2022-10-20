@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { ShadowedView } from 'react-native-fast-shadow';
 
 export default function App() {
@@ -19,14 +19,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   box: {
-    width: 120,
-    height: 120,
+    width: 200,
+    height: 150,
     marginVertical: 20,
     borderRadius: 40,
+    borderTopLeftRadius: 10,
     shadowColor: 'red',
     shadowOpacity: 0.8,
-    shadowRadius: 25,
-    shadowOffset: { width: 0, height: -3 },
-    backgroundColor: 'white',
+    shadowRadius: Platform.select({ ios: 10, android: 25 }),
+    shadowOffset: { width: 1, height: 1 },
+    backgroundColor: 'yellow',
   },
 });
