@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ColorValue,
+  I18nManager,
   requireNativeComponent,
   StyleProp,
   StyleSheet,
@@ -9,9 +10,17 @@ import {
   ViewStyle,
 } from 'react-native';
 
+type BorderRadius = {
+  topLeft: number;
+  topRight: number;
+  bottomLeft: number;
+  bottomRight: number;
+};
+
 type ShadowViewProps = ViewProps & {
   radius: number;
   color: ColorValue;
+  borderRadius: BorderRadius;
 };
 
 const ShadowView = requireNativeComponent<ShadowViewProps>('FastShadowView');
@@ -31,6 +40,37 @@ export const ShadowedView = ({ style, ...viewProps }: ViewProps) => {
   const radius = Math.min(Math.max(shadowRadius, 0), maxShadowRadius);
   const inset = Math.ceil(radius);
 
+  const borderRadius = {
+    topLeft:
+      (I18nManager.isRTL
+        ? innerStyle.borderTopEndRadius
+        : innerStyle.borderTopStartRadius) ??
+      innerStyle.borderTopLeftRadius ??
+      innerStyle.borderRadius ??
+      0,
+    topRight:
+      (I18nManager.isRTL
+        ? innerStyle.borderTopStartRadius
+        : innerStyle.borderTopEndRadius) ??
+      innerStyle.borderTopRightRadius ??
+      innerStyle.borderRadius ??
+      0,
+    bottomLeft:
+      (I18nManager.isRTL
+        ? innerStyle.borderBottomEndRadius
+        : innerStyle.borderBottomStartRadius) ??
+      innerStyle.borderBottomLeftRadius ??
+      innerStyle.borderRadius ??
+      0,
+    bottomRight:
+      (I18nManager.isRTL
+        ? innerStyle.borderBottomStartRadius
+        : innerStyle.borderBottomEndRadius) ??
+      innerStyle.borderBottomRightRadius ??
+      innerStyle.borderRadius ??
+      0,
+  };
+
   return (
     <View style={outerStyle} pointerEvents="box-none">
       <ShadowView
@@ -46,11 +86,15 @@ export const ShadowedView = ({ style, ...viewProps }: ViewProps) => {
             { translateY: shadowOffset.height },
           ],
         }}
-        radius={radius}
         color={shadowColor}
+        radius={radius}
+        borderRadius={borderRadius}
         pointerEvents="none"
       />
-      <View style={[innerStyle, { flexGrow: 1 }]} {...viewProps} />
+      <View
+        style={[innerStyle, { flexGrow: 1, flexShrink: 1 }]}
+        {...viewProps}
+      />
     </View>
   );
 };

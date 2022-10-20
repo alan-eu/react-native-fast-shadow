@@ -4,25 +4,38 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 
 public class ShadowBitmap {
-  public static Bitmap createShadowBitmap(Context context, int rectWidth, int rectHeight, float radius) {
-    int inset = (int)Math.ceil(radius);
-    int width = rectWidth + 2 * inset;
-    int height = rectHeight + 2 * inset;
-    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8);
+  public static Bitmap createShadowBitmap(Context context, int width, int height, float[] borderRadius, float blurRadius) {
+    int inset = (int)Math.ceil(blurRadius);
+    int bitmapWidth = width + 2 * inset;
+    int bitmapHeight = height + 2 * inset;
+    Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ALPHA_8);
     Canvas canvas = new Canvas(bitmap);
 
     Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     paint.setColor(0xff000000);
-    canvas.drawRect(inset, inset, inset + rectWidth, inset + rectHeight, paint);
+
+    Path roundedRect = new Path();
+    roundedRect.addRoundRect(inset, inset, inset + width, inset+ height, new float[] {
+      borderRadius[0],
+      borderRadius[0],
+      borderRadius[1],
+      borderRadius[1],
+      borderRadius[2],
+      borderRadius[2],
+      borderRadius[3],
+      borderRadius[3],
+    }, Path.Direction.CW);
+    canvas.drawPath(roundedRect, paint);
 
     try {
-      if (radius > 0) {
-        blurBitmap(context, bitmap, radius);
+      if (blurRadius > 0) {
+        blurBitmap(context, bitmap, blurRadius);
       }
       return bitmap;
     } catch (Exception e) {
