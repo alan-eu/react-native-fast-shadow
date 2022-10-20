@@ -10,7 +10,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-type BorderRadius = {
+type BorderRadii = {
   topLeft: number;
   topRight: number;
   bottomLeft: number;
@@ -20,14 +20,10 @@ type BorderRadius = {
 type ShadowViewProps = ViewProps & {
   radius: number;
   color: ColorValue;
-  borderRadius: BorderRadius;
+  borderRadii: BorderRadii;
 };
 
 const ShadowView = requireNativeComponent<ShadowViewProps>('FastShadowView');
-
-// Renderscript does not support a blur radius greater than 25.
-// Note for later: we could probably support them with downscaling
-const maxShadowRadius = 25;
 
 export const ShadowedView = ({ style, ...viewProps }: ViewProps) => {
   const [outerStyle, innerStyle] = splitStyle(style);
@@ -37,10 +33,14 @@ export const ShadowedView = ({ style, ...viewProps }: ViewProps) => {
     shadowColor = 'black',
     shadowOffset = { width: 0, height: -3 },
   } = outerStyle;
+
+  // Renderscript does not support a blur radius greater than 25.
+  // Note for later: we could probably support them with downscaling
+  const maxShadowRadius = 25;
   const radius = Math.min(Math.max(shadowRadius, 0), maxShadowRadius);
   const inset = Math.ceil(radius);
 
-  const borderRadius = {
+  const borderRadii = {
     topLeft:
       (I18nManager.isRTL
         ? innerStyle.borderTopEndRadius
@@ -88,7 +88,7 @@ export const ShadowedView = ({ style, ...viewProps }: ViewProps) => {
         }}
         color={shadowColor}
         radius={radius}
-        borderRadius={borderRadius}
+        borderRadii={borderRadii}
         pointerEvents="none"
       />
       <View

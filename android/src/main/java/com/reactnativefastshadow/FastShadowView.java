@@ -11,7 +11,7 @@ import android.view.View;
 public class FastShadowView extends View {
   private int color = 0x00000000;
   private float radius = 0;
-  private float[] borderRadius = { 0, 0, 0, 0 }; // in clockwise order: tl, tr, br, bl
+  private float[] borderRadii = { 0, 0, 0, 0 }; // in clockwise order: tl, tr, br, bl
 
   public FastShadowView(Context context) {
     super(context);
@@ -27,8 +27,8 @@ public class FastShadowView extends View {
     this.invalidate();
   }
 
-  public void setBorderRadius(float[] borderRadius) {
-    this.borderRadius = borderRadius;
+  public void setBorderRadii(float[] borderRadii) {
+    this.borderRadii = borderRadii;
     this.invalidate();
   }
 
@@ -39,7 +39,7 @@ public class FastShadowView extends View {
     int inset = (int)Math.ceil(radius);
     int width = pxToDp(getWidth()) - 2 * inset;
     int height = pxToDp(getHeight()) - 2 * inset;
-    Bitmap shadowBitmap = ShadowBitmap.createShadowBitmap(getContext(), width, height, borderRadius, radius);
+    Bitmap shadowBitmap = ShadowBitmap.createShadowBitmap(getContext(), width, height, borderRadii, radius);
 
     if (shadowBitmap != null) {
       Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
