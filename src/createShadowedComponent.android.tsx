@@ -1,28 +1,6 @@
 import React from 'react';
-import {
-  ColorValue,
-  I18nManager,
-  requireNativeComponent,
-  StyleSheet,
-  View,
-  ViewProps,
-  ViewStyle,
-} from 'react-native';
-
-type BorderRadii = {
-  topLeft: number;
-  topRight: number;
-  bottomLeft: number;
-  bottomRight: number;
-};
-
-type ShadowViewProps = ViewProps & {
-  radius: number;
-  color: ColorValue;
-  borderRadii: BorderRadii;
-};
-
-const ShadowView = requireNativeComponent<ShadowViewProps>('FastShadowView');
+import { I18nManager, StyleSheet, View, ViewStyle } from 'react-native';
+import { FastShadowView } from './FastShadowView';
 
 export function createShadowedComponent<T extends React.ComponentType<any>>(
   Component: T
@@ -80,7 +58,7 @@ export function createShadowedComponent<T extends React.ComponentType<any>>(
 
     return (
       <View style={outerStyle} pointerEvents="box-none">
-        <ShadowView
+        <FastShadowView
           style={{
             position: 'absolute',
             left: -inset,
