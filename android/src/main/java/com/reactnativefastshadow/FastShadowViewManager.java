@@ -24,6 +24,12 @@ public class FastShadowViewManager extends SimpleViewManager<FastShadowView> {
     return new FastShadowView(reactContext);
   }
 
+  @Override
+  public void onDropViewInstance(@NonNull FastShadowView view) {
+    super.onDropViewInstance(view);
+    view.releaseShadow();
+  }
+
   @ReactProp(name = "color")
   public void setColor(FastShadowView view, String color) {
     view.setColor(Color.parseColor(color));

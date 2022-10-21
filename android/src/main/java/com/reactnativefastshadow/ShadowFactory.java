@@ -18,19 +18,30 @@ import android.util.DisplayMetrics;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class ShadowBitmap {
-  public static Drawable createShadowDrawable(Context context, int width, int height, float[] borderRadii, float blurRadius) {
+public class ShadowFactory {
+  public ShadowSpecs getShadowSpecs(int width, int height, float[] borderRadii, float blurRadius) {
     NinePatchInsets ninePatchInsets = getNinePatchInsets(borderRadii, blurRadius);
     int ninePatchWidth = ninePatchInsets.left + ninePatchInsets.right + 1;
     int ninePatchHeight = ninePatchInsets.top + ninePatchInsets.bottom + 1;
     boolean useNinePatchHorizontally = width >= ninePatchWidth;
     boolean useNinePatchVertically = height >= ninePatchHeight;
-
-    int inset = (int)Math.ceil(blurRadius);
     int shapeWidth = useNinePatchHorizontally ? ninePatchWidth : width;
     int shapeHeight = useNinePatchVertically ? ninePatchHeight : height;
-    int bitmapWidth = shapeWidth + 2 * inset;
-    int bitmapHeight = shapeHeight + 2 * inset;
+    return new ShadowSpecs(
+      shapeWidth, shapeHeight, borderRadii, blurRadius,
+      ninePatchInsets, useNinePatchHorizontally, useNinePatchVertically
+    );
+  }
+
+  public Shadow createShadow(Context context, ShadowSpecs specs) {
+    float[] borderRadii = specs.borderRadii;
+    float blurRadius = specs.blurRadius;
+    NinePatchInsets ninePatchInsets = specs.ninePatchInsets;
+    boolean useNinePatchHorizontally = specs.useNinePatchHorizontally;
+    boolean useNinePatchVertically = specs.useNinePatchVertically;
+    int inset = (int)Math.ceil(blurRadius);
+    int bitmapWidth = specs.shapeWidth + 2 * inset;
+    int bitmapHeight = specs.shapeHeight + 2 * inset;
 
     Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ALPHA_8);
     bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
@@ -59,19 +70,21 @@ public class ShadowBitmap {
       if (blurRadius > 0) {
         blurBitmap(context, bitmap, blurRadius);
       }
+      Drawable drawable;
       if (useNinePatchHorizontally || useNinePatchVertically) {
         NinePatch ninePatch = createNinePatch(bitmap, ninePatchInsets, inset, useNinePatchHorizontally, useNinePatchVertically);
-        return new NinePatchDrawable(context.getResources(), ninePatch);
+        drawable = new NinePatchDrawable(context.getResources(), ninePatch);
       } else {
-        return new BitmapDrawable(context.getResources(), bitmap);
+        drawable = new BitmapDrawable(context.getResources(), bitmap);
       }
+      return new Shadow(specs, drawable, bitmap);
     } catch (Exception e) {
       bitmap.recycle();
       return null;
     }
   }
 
-  private static void blurBitmap(Context context, Bitmap bitmap, float blurRadius) {
+  private void blurBitmap(Context context, Bitmap bitmap, float blurRadius) {
     RenderScript rs = null;
     Allocation input = null;
     Allocation output = null;
@@ -97,7 +110,7 @@ public class ShadowBitmap {
   // Here, it is inferred from Android source code:
   // https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/include/androidfw/ResourceTypes.h#80
   // https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/ResourceTypes.cpp#221
-  private static NinePatch createNinePatch(Bitmap bitmap, NinePatchInsets insets, int extraInset, boolean horizontally, boolean vertically) {
+  private NinePatch createNinePatch(Bitmap bitmap, NinePatchInsets insets, int extraInset, boolean horizontally, boolean vertically) {
     int numXDivs = horizontally ? 2 : 0;
     int numYDivs = vertically ? 2 : 0;
     int numColors = (numXDivs + 1) * (numYDivs + 1);
@@ -136,7 +149,7 @@ public class ShadowBitmap {
     return new NinePatch(bitmap, chunk.array());
   }
 
-  private static NinePatchInsets getNinePatchInsets(float[] borderRadii, float blurRadius) {
+  private NinePatchInsets getNinePatchInsets(float[] borderRadii, float blurRadius) {
     return new NinePatchInsets(
       getNinePatchInsetForCorner(Math.max(borderRadii[0], borderRadii[3]), blurRadius),
       getNinePatchInsetForCorner(Math.max(borderRadii[1], borderRadii[2]), blurRadius),
@@ -145,21 +158,7 @@ public class ShadowBitmap {
     );
   }
 
-  private static int getNinePatchInsetForCorner(float borderRadius, float blurRadius) {
+  private int getNinePatchInsetForCorner(float borderRadius, float blurRadius) {
     return (int) Math.ceil(blurRadius + borderRadius);
-  }
-}
-
-class NinePatchInsets {
-  public int left;
-  public int right;
-  public int top;
-  public int bottom;
-
-  public NinePatchInsets(int left, int right, int top, int bottom) {
-    this.left = left;
-    this.right = right;
-    this.top = top;
-    this.bottom = bottom;
   }
 }
