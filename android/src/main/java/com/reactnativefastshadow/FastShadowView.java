@@ -31,6 +31,9 @@ public class FastShadowView extends ReactViewGroup {
 
   public void setOpacity(float opacity) {
     this.opacity = opacity;
+
+    // We need to call this, as draw() is not called by default on ViewGroup
+    this.setWillNotDraw(opacity <= 0);
     this.invalidate();
   }
 
@@ -60,27 +63,46 @@ public class FastShadowView extends ReactViewGroup {
   }
 
   @Override
-  public void draw(Canvas canvas) {
+  protected void onDraw(Canvas canvas) {
     int width = Math.round(PixelUtil.toDIPFromPixel(getWidth()));
-    int height = Math.round(PixelUtil.toDIPFromPixel(getHeight()));
+    super.onDraw(canvas);
+  }
 
-    Shadow prevShadow = shadow;
-    shadow = shadowCache.getOrCreateShadow(getContext(), width, height, cornerRadii, radius);
-    shadowCache.releaseShadow(prevShadow);
+  @Override
+  public void draw(Canvas canvas) {
+    // We override draw() and not onDraw() as we want to draw
+    // our shadow behind the background drawable of the View.
 
-    if (shadow != null) {
-      Drawable drawable = shadow.getDrawable();
-      drawable.setBounds(new Rect(
-        Math.round(PixelUtil.toPixelFromDIP(-radius + offsetX)),
-        Math.round(PixelUtil.toPixelFromDIP(-radius + offsetY)),
-        getWidth() + Math.round(PixelUtil.toPixelFromDIP(radius + offsetX)),
-        getHeight() + Math.round(PixelUtil.toPixelFromDIP(radius + offsetY))
-      ));
-      drawable.setAlpha(Math.round(opacity * 255));
-      drawable.setTint(color);
-      drawable.draw(canvas);
+    if (opacity > 0) {
+      int width = dp(getWidth());
+      int height = dp(getHeight());
+
+      Shadow prevShadow = shadow;
+      shadow = shadowCache.getOrCreateShadow(getContext(), width, height, cornerRadii, radius);
+      shadowCache.releaseShadow(prevShadow);
+
+      if (shadow != null) {
+        Drawable drawable = shadow.getDrawable();
+        drawable.setBounds(new Rect(
+          px(-radius + offsetX),
+          px(-radius + offsetY),
+          getWidth() + px(radius + offsetX),
+          getHeight() + px(radius + offsetY)
+        ));
+        drawable.setAlpha(Math.round(opacity * 255));
+        drawable.setTint(color);
+        drawable.draw(canvas);
+      }
     }
 
     super.draw(canvas);
+  }
+
+  static int dp(float px) {
+    return Math.round(PixelUtil.toDIPFromPixel(px));
+  }
+
+  static int px(float dp) {
+    return Math.round(PixelUtil.toPixelFromDIP(dp));
   }
 }

@@ -1,6 +1,6 @@
 import { requireNativeComponent, ViewProps } from 'react-native';
 
-type FastShadowViewProps = ViewProps & {
+export type FastShadowViewProps = ViewProps & {
   cornerRadii: {
     topLeft: number;
     topRight: number;
