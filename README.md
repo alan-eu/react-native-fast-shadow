@@ -8,8 +8,8 @@ React Native only supports shadows on Android through the [elevation](https://re
 
 ## Features
 * 💆‍♀️ **Easy to use:** Drop-in replacement for the `<View>` component
-* 🎛 **Customizable:** Supports all the regular shadow props: `shadowRadius`, `shadowColor`, `shadowOpacity` and `shadowOffset`
 * ⚡️ **Performant:** Shadows can be applied to a large number of views without any signicant performance impact. It has been optimized for low memory consumption and fast rendering
+* 🎛 **Customizable:** Supports all the regular shadow props: `shadowRadius`, `shadowColor`, `shadowOpacity` and `shadowOffset`
 
 ## Getting started
 
