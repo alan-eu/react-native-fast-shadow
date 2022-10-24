@@ -1,16 +1,12 @@
-import { ColorValue, requireNativeComponent, ViewProps } from 'react-native';
-
-type BorderRadii = {
-  topLeft: number;
-  topRight: number;
-  bottomLeft: number;
-  bottomRight: number;
-};
+import { requireNativeComponent, ViewProps } from 'react-native';
 
 type FastShadowViewProps = ViewProps & {
-  radius: number;
-  color: ColorValue;
-  borderRadii: BorderRadii;
+  borderRadii: {
+    topLeft: number;
+    topRight: number;
+    bottomLeft: number;
+    bottomRight: number;
+  };
 };
 
 export const FastShadowView =

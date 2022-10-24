@@ -34,6 +34,10 @@ public class ShadowFactory {
   }
 
   public Shadow createShadow(Context context, ShadowSpecs specs) {
+    if (specs.shapeWidth <= 0 || specs.shapeHeight <= 0) {
+      return null;
+    }
+
     float[] borderRadii = specs.borderRadii;
     float blurRadius = specs.blurRadius;
     NinePatchInsets ninePatchInsets = specs.ninePatchInsets;
@@ -43,7 +47,7 @@ public class ShadowFactory {
     int bitmapWidth = specs.shapeWidth + 2 * inset;
     int bitmapHeight = specs.shapeHeight + 2 * inset;
 
-    Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ALPHA_8);
+    Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
     bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
 
     Canvas canvas = new Canvas(bitmap);

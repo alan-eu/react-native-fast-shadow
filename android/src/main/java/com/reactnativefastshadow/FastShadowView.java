@@ -4,16 +4,21 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
-import android.view.View;
 
-public class FastShadowView extends View {
+
+import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.views.view.ReactViewGroup;
+
+public class FastShadowView extends ReactViewGroup {
   private static ShadowCache shadowCache = new ShadowCache();
 
   private Shadow shadow;
   private int color = 0x00000000;
+  private float opacity = 0;
   private float radius = 0;
-  private float[] borderRadii = { 0, 0, 0, 0 }; // in clockwise order: tl, tr, br, bl
+  private float offsetX = 0;
+  private float offsetY = -3;
+  private float[] borderRadii = {0, 0, 0, 0}; // in clockwise order: tl, tr, br, bl
 
   public FastShadowView(Context context) {
     super(context);
@@ -24,9 +29,24 @@ public class FastShadowView extends View {
     this.invalidate();
   }
 
+  public void setOpacity(float opacity) {
+    this.opacity = opacity;
+    this.invalidate();
+  }
+
   public void setRadius(float radius) {
     this.radius = radius;
     this.invalidate();
+  }
+
+  public void setOffset(float offsetX, float offsetY) {
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+    this.invalidate();
+  }
+
+  public void resetOffset() {
+    setOffset(0, -3);
   }
 
   public void setBorderRadii(float[] borderRadii) {
@@ -40,12 +60,9 @@ public class FastShadowView extends View {
   }
 
   @Override
-  protected void onDraw(Canvas canvas) {
-    super.onDraw(canvas);
-
-    int inset = (int)Math.ceil(radius);
-    int width = pxToDp(getWidth()) - 2 * inset;
-    int height = pxToDp(getHeight()) - 2 * inset;
+  public void draw(Canvas canvas) {
+    int width = Math.round(PixelUtil.toDIPFromPixel(getWidth()));
+    int height = Math.round(PixelUtil.toDIPFromPixel(getHeight()));
 
     Shadow prevShadow = shadow;
     shadow = shadowCache.getOrCreateShadow(getContext(), width, height, borderRadii, radius);
@@ -53,14 +70,17 @@ public class FastShadowView extends View {
 
     if (shadow != null) {
       Drawable drawable = shadow.getDrawable();
-      drawable.setBounds(new Rect(0, 0, getWidth(), getHeight()));
+      drawable.setBounds(new Rect(
+        Math.round(PixelUtil.toPixelFromDIP(-radius + offsetX)),
+        Math.round(PixelUtil.toPixelFromDIP(-radius + offsetY)),
+        getWidth() + Math.round(PixelUtil.toPixelFromDIP(radius + offsetX)),
+        getHeight() + Math.round(PixelUtil.toPixelFromDIP(radius + offsetY))
+      ));
+      drawable.setAlpha(Math.round(opacity * 255));
       drawable.setTint(color);
       drawable.draw(canvas);
     }
-  }
 
-  private int pxToDp(int px) {
-    DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-    return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    super.draw(canvas);
   }
 }

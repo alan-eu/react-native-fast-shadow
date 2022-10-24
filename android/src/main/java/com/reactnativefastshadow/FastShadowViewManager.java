@@ -5,11 +5,12 @@ import android.graphics.Color;
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.ReactViewGroup;
+import com.facebook.react.views.view.ReactViewManager;
 
-public class FastShadowViewManager extends SimpleViewManager<FastShadowView> {
+public class FastShadowViewManager extends ReactViewManager {
   public static final String REACT_CLASS = "FastShadowView";
 
   @Override
@@ -19,24 +20,40 @@ public class FastShadowViewManager extends SimpleViewManager<FastShadowView> {
   }
 
   @Override
-  @NonNull
-  public FastShadowView createViewInstance(ThemedReactContext reactContext) {
-    return new FastShadowView(reactContext);
+  public FastShadowView createViewInstance(ThemedReactContext context) {
+    return new FastShadowView(context);
   }
 
   @Override
-  public void onDropViewInstance(@NonNull FastShadowView view) {
+  public void onDropViewInstance(@NonNull ReactViewGroup view) {
     super.onDropViewInstance(view);
-    view.releaseShadow();
+    ((FastShadowView) view).releaseShadow();
   }
 
-  @ReactProp(name = "color")
-  public void setColor(FastShadowView view, String color) {
-    view.setColor(Color.parseColor(color));
+  @ReactProp(name = "shadowColor", customType = "Color", defaultInt = Color.BLACK)
+  public void setShadowColor(FastShadowView view, int color) {
+    view.setColor(color);
   }
 
-  @ReactProp(name = "radius")
-  public void setRadius(FastShadowView view, float radius) {
+  @ReactProp(name = "shadowOpacity", defaultFloat = 0)
+  public void setShadowOpacity(FastShadowView view, float opacity) {
+    view.setOpacity(opacity);
+  }
+
+  @ReactProp(name = "shadowOffset")
+  public void setShadowOffset(FastShadowView view, ReadableMap offset) {
+    if (offset == null) {
+      view.resetOffset();
+    } else {
+      view.setOffset(
+        (float) offset.getDouble("width"),
+        (float) offset.getDouble("height")
+      );
+    }
+  }
+
+  @ReactProp(name = "shadowRadius", defaultFloat = 3)
+  public void setShadowRadius(FastShadowView view, float radius) {
     view.setRadius(radius);
   }
 
