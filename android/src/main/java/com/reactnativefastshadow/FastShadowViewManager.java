@@ -57,9 +57,9 @@ public class FastShadowViewManager extends ReactViewManager {
     view.setRadius(radius);
   }
 
-  @ReactProp(name = "borderRadii")
-  public void setBorderRadii(FastShadowView view, ReadableMap borderRadius) {
-    view.setBorderRadii(new float[]{
+  @ReactProp(name = "cornerRadii")
+  public void setCornerRadii(FastShadowView view, ReadableMap borderRadius) {
+    view.setCornerRadii(new float[]{
       (float) borderRadius.getDouble("topLeft"),
       (float) borderRadius.getDouble("topRight"),
       (float) borderRadius.getDouble("bottomRight"),

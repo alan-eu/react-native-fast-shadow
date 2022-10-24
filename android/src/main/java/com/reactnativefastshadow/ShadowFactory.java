@@ -19,8 +19,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class ShadowFactory {
-  public ShadowSpecs getShadowSpecs(int width, int height, float[] borderRadii, float blurRadius) {
-    NinePatchInsets ninePatchInsets = getNinePatchInsets(borderRadii, blurRadius);
+  public ShadowSpecs getShadowSpecs(int width, int height, float[] cornerRadii, float blurRadius) {
+    NinePatchInsets ninePatchInsets = getNinePatchInsets(cornerRadii, blurRadius);
     int ninePatchWidth = ninePatchInsets.left + ninePatchInsets.right + 1;
     int ninePatchHeight = ninePatchInsets.top + ninePatchInsets.bottom + 1;
     boolean useNinePatchHorizontally = width >= ninePatchWidth;
@@ -28,7 +28,7 @@ public class ShadowFactory {
     int shapeWidth = useNinePatchHorizontally ? ninePatchWidth : width;
     int shapeHeight = useNinePatchVertically ? ninePatchHeight : height;
     return new ShadowSpecs(
-      shapeWidth, shapeHeight, borderRadii, blurRadius,
+      shapeWidth, shapeHeight, cornerRadii, blurRadius,
       ninePatchInsets, useNinePatchHorizontally, useNinePatchVertically
     );
   }
@@ -38,7 +38,7 @@ public class ShadowFactory {
       return null;
     }
 
-    float[] borderRadii = specs.borderRadii;
+    float[] cornerRadii = specs.cornerRadii;
     float blurRadius = specs.blurRadius;
     NinePatchInsets ninePatchInsets = specs.ninePatchInsets;
     boolean useNinePatchHorizontally = specs.useNinePatchHorizontally;
@@ -57,14 +57,14 @@ public class ShadowFactory {
     roundedRect.addRoundRect(
       new RectF(inset, inset, bitmapWidth - inset, bitmapHeight - inset),
       new float[]{
-        borderRadii[0],
-        borderRadii[0],
-        borderRadii[1],
-        borderRadii[1],
-        borderRadii[2],
-        borderRadii[2],
-        borderRadii[3],
-        borderRadii[3],
+        cornerRadii[0],
+        cornerRadii[0],
+        cornerRadii[1],
+        cornerRadii[1],
+        cornerRadii[2],
+        cornerRadii[2],
+        cornerRadii[3],
+        cornerRadii[3],
       },
       Path.Direction.CW
     );
@@ -153,16 +153,16 @@ public class ShadowFactory {
     return new NinePatch(bitmap, chunk.array());
   }
 
-  private NinePatchInsets getNinePatchInsets(float[] borderRadii, float blurRadius) {
+  private NinePatchInsets getNinePatchInsets(float[] cornerRadii, float blurRadius) {
     return new NinePatchInsets(
-      getNinePatchInsetForCorner(Math.max(borderRadii[0], borderRadii[3]), blurRadius),
-      getNinePatchInsetForCorner(Math.max(borderRadii[1], borderRadii[2]), blurRadius),
-      getNinePatchInsetForCorner(Math.max(borderRadii[0], borderRadii[1]), blurRadius),
-      getNinePatchInsetForCorner(Math.max(borderRadii[2], borderRadii[3]), blurRadius)
+      getNinePatchInsetForCorner(Math.max(cornerRadii[0], cornerRadii[3]), blurRadius),
+      getNinePatchInsetForCorner(Math.max(cornerRadii[1], cornerRadii[2]), blurRadius),
+      getNinePatchInsetForCorner(Math.max(cornerRadii[0], cornerRadii[1]), blurRadius),
+      getNinePatchInsetForCorner(Math.max(cornerRadii[2], cornerRadii[3]), blurRadius)
     );
   }
 
-  private int getNinePatchInsetForCorner(float borderRadius, float blurRadius) {
-    return (int) Math.ceil(blurRadius + borderRadius);
+  private int getNinePatchInsetForCorner(float cornerRadius, float blurRadius) {
+    return (int) Math.ceil(blurRadius + cornerRadius);
   }
 }

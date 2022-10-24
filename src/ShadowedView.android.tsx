@@ -7,7 +7,7 @@ export class ShadowedView extends React.Component<ViewProps> {
     const style = StyleSheet.flatten(this.props.style) ?? {};
     const { elevation, ...viewStyle } = style;
 
-    const borderRadii = {
+    const cornerRadii = {
       topLeft:
         (I18nManager.isRTL
           ? style.borderTopEndRadius
@@ -42,7 +42,7 @@ export class ShadowedView extends React.Component<ViewProps> {
       <FastShadowView
         {...this.props}
         style={viewStyle}
-        borderRadii={borderRadii}
+        cornerRadii={cornerRadii}
       />
     );
   }

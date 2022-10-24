@@ -1,22 +1,26 @@
 package com.reactnativefastshadow;
 
 public class ShadowSpecs {
+  // Renderscript does not support a blur radius greater than 25.
+  // Thought for later: we could probably support them with downscaling
+  static final float MAX_BLUR_RADIUS = 25;
+
   int shapeWidth;
   int shapeHeight;
-  float[] borderRadii;
+  float[] cornerRadii;
   float blurRadius;
   NinePatchInsets ninePatchInsets;
   boolean useNinePatchHorizontally;
   boolean useNinePatchVertically;
 
   public ShadowSpecs(
-    int shapeWidth, int shapeHeight, float[] borderRadii, float blurRadius,
+    int shapeWidth, int shapeHeight, float[] cornerRadii, float blurRadius,
     NinePatchInsets ninePatchInsets, boolean useNinePatchHorizontally, boolean isUseNinePatchVertically
   ) {
     this.shapeWidth = shapeWidth;
     this.shapeHeight = shapeHeight;
-    this.borderRadii = borderRadii;
-    this.blurRadius = blurRadius;
+    this.cornerRadii = cornerRadii;
+    this.blurRadius = Math.min(Math.max(blurRadius, 0), MAX_BLUR_RADIUS);
     this.ninePatchInsets = ninePatchInsets;
     this.useNinePatchHorizontally = useNinePatchHorizontally;
     this.useNinePatchVertically = isUseNinePatchVertically;
@@ -28,14 +32,14 @@ public class ShadowSpecs {
   private void roundFloatValues() {
     blurRadius = Math.round(blurRadius * 2) / 2;
     for (int i = 0; i < 4; i++) {
-      borderRadii[i] = Math.round(borderRadii[i] * 2) / 2;
+      cornerRadii[i] = Math.round(cornerRadii[i] * 2) / 2;
     }
   }
 
   public String getCacheKey() {
     return String.format(
       "%d:%d:%.1f:%.1f:%.1f:%.1f:%.1f",
-      shapeWidth, shapeHeight, borderRadii[0], borderRadii[1], borderRadii[2], borderRadii[3], blurRadius
+      shapeWidth, shapeHeight, cornerRadii[0], cornerRadii[1], cornerRadii[2], cornerRadii[3], blurRadius
     );
   }
 }

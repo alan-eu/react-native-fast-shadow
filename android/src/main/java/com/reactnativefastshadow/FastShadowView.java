@@ -18,7 +18,7 @@ public class FastShadowView extends ReactViewGroup {
   private float radius = 0;
   private float offsetX = 0;
   private float offsetY = -3;
-  private float[] borderRadii = {0, 0, 0, 0}; // in clockwise order: tl, tr, br, bl
+  private float[] cornerRadii = {0, 0, 0, 0}; // in clockwise order: tl, tr, br, bl
 
   public FastShadowView(Context context) {
     super(context);
@@ -49,8 +49,8 @@ public class FastShadowView extends ReactViewGroup {
     setOffset(0, -3);
   }
 
-  public void setBorderRadii(float[] borderRadii) {
-    this.borderRadii = borderRadii;
+  public void setCornerRadii(float[] cornerRadii) {
+    this.cornerRadii = cornerRadii;
     this.invalidate();
   }
 
@@ -65,7 +65,7 @@ public class FastShadowView extends ReactViewGroup {
     int height = Math.round(PixelUtil.toDIPFromPixel(getHeight()));
 
     Shadow prevShadow = shadow;
-    shadow = shadowCache.getOrCreateShadow(getContext(), width, height, borderRadii, radius);
+    shadow = shadowCache.getOrCreateShadow(getContext(), width, height, cornerRadii, radius);
     shadowCache.releaseShadow(prevShadow);
 
     if (shadow != null) {
