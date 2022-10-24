@@ -44,7 +44,7 @@ import { ShadowedView } from 'react-native-fast-shadow';
 **shadowStyle():**
 
 The `shadowStyle()` utility can also be used to make it easier to create shadow styles and to **keep shadows consistent** accross platforms.
-It will create the same `style` prop as above, but will divide the shadow radius by 2 on iOS (as for some reasons, iOS shadows are too large by a factor of 2 when compared to design tools or to CSS's box-shadow model):
+It will create the same `style` prop as above, but will divide the shadow radius by 2 on iOS (as for some reasons, iOS shadows are too large by a factor of 2 when compared to design tools or to CSS's box-shadows):
 
 ```jsx
 import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
@@ -75,7 +75,7 @@ On Android, shadow drawables are generated with the following process (see [Shad
 ## Troubleshooting
 
 React-native-fast-shadow comes with the following limitations:
-* **It only works with rounded rectangles:** Unlike the iOS `<View>` implementation, `<ShadowedView>` won't work with freeform views. It expects its descendant views to be a rounded rectangle (up to a circle). **Solutions:** For `<Text>` elements, you can use [textShadowRadius](https://reactnative.dev/docs/text-style-props.html#textshadowradius). For complex shapes, [react-native-androw](https://github.com/folofse/androw) is your best option.
+* **It only works with rounded rectangles:** Unlike the iOS `<View>` implementation, `<ShadowedView>` won't work with freeform views. It expects its direct descendant view to be a rounded rectangle (up to a circle). **Solutions:** For shadowed `<Text>` elements, you can use [textShadowRadius](https://reactnative.dev/docs/text-style-props.html#textshadowradius). For complex shapes, [react-native-androw](https://github.com/folofse/androw) is your best option.
 * **\<ShadowedView\> expects its child view to fill it:** It's up to you to make sure that `<ShadowedView>` and its children have the same size, otherwise the shadow will be larger than the content (you can think of `<ShadowedView>` as a view with a background color).
 * **Corner radii can be inferred incorrectly:** We use `<ShadowedView>`'s style or the style of its direct child to infer the corner radii to apply. If your view hierarchy is more complex, corner radii might not be inferred correctly. **Solution:** rework your view hierarchy or pass the `borderRadius` directly to the `style` prop of `<ShadowedView>`.
 * **Shadow radius is limited to 25 or below:** This limitation comes from Renderscript's [blur effect](https://developer.android.com/reference/android/renderscript/ScriptIntrinsicBlur). **Solution:** Let us know if this is an issue for you. This can probably be worked around by downscaling the shadow bitmap before applying the blur effect.
