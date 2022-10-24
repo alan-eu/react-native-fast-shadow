@@ -4,7 +4,7 @@
 
 ## Why
 
-React Native only supports shadows on Android through the [elevation](https://reactnative.dev/docs/view-style-props#elevation-android) prop but achieving the effect you want is often impossible as it only comes with very few presets. Third-party libraries have been created to circumvent this but when used on many views, they can make you app slower or significantly increase its memory consumption.
+React Native only supports shadows on Android through the [elevation](https://reactnative.dev/docs/view-style-props#elevation-android) prop but achieving the desired effect is often impossible as it only comes with very few presets. Third-party libraries have been created to circumvent this but when used on many views, they can make you app slower or significantly increase its memory consumption.
 
 ## Features
 * 💆‍♀️ **Easy to use:** Drop-in replacement for the `<View>` component
@@ -15,14 +15,14 @@ React Native only supports shadows on Android through the [elevation](https://re
 
 ```sh
 npm install react-native-fast-shadow
-or
+# or
 yarn add react-native-fast-shadow
 ```
 
 **Usage:**
 
 ```jsx
-import { ShadowedView } from "react-native-fast-shadow";
+import { ShadowedView } from 'react-native-fast-shadow';
 
 <ShadowedView
   style={{
@@ -41,10 +41,10 @@ import { ShadowedView } from "react-native-fast-shadow";
 <img width="198" src="https://user-images.githubusercontent.com/20420653/197513322-81c46d07-2f44-463b-86ef-86a4ad856146.png">
 
 The `shadowStyle()` utility can be used to make it easier to create shadow styles and to **keep shadows consistent** accross platforms.
-It will create the same `style` prop as above, but will divide the shadow radius by 2 on iOS (as for some reasons, it is too large by a factor of 2 when compared to design tools or to CSS's box-shadow model):
+It will create the same `style` prop as above, but will divide the shadow radius by 2 on iOS (as for some reasons, iOS shadows are too large by a factor of 2 when compared to design tools or to CSS's box-shadow model):
 
 ```jsx
-import { ShadowedView, shadowStyle } from "react-native-fast-shadow";
+import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
 
 <ShadowedView
   style={shadowStyle({
@@ -74,10 +74,15 @@ On Android, shadow drawables are generated with the following process (see [Shad
 ## Troubleshooting
 
 React-native-fast-shadow comes with the following limitations:
-* **It only works with rounded rectangles:** Unlike the iOS `<View>` implementation, `<ShadowedView>` won't work with freeform views. It expects its descendant views to be a rounded rectangle (up to a circle). **Solutions:** For `<Text>` elements, you can use [textShadowRadius](https://reactnative.dev/docs/text-style-props.html#textshadowradius). For complex shapes, [react-native-androw](https://github.com/folofse/androw) is probably your best option.
+* **It only works with rounded rectangles:** Unlike the iOS `<View>` implementation, `<ShadowedView>` won't work with freeform views. It expects its descendant views to be a rounded rectangle (up to a circle). **Solutions:** For `<Text>` elements, you can use [textShadowRadius](https://reactnative.dev/docs/text-style-props.html#textshadowradius). For complex shapes, [react-native-androw](https://github.com/folofse/androw) is your best option.
 * **\<ShadowedView\> expects its child view to fill it:** It's up to you to make sure that `<ShadowedView>` and its children have the same size, otherwise the shadow will be larger than the content (you can think of `<ShadowedView>` as a view with a background color).
-* **Corner radii can be inferred incorrectly:** We use `<ShadowedView>`'s style or the style of its direct child to infer the corner radii to apply. If the view hierarchy has more layers, corner radii won't be inferred correctly. **Solution:** rework your view hierarchy or pass the `borderRadius` directly to the `style` prop of `<ShadowedView>`.
-* **Shadow radius is limited to 25 or below:** This limitation comes from Renderscript's [blur effect](https://developer.android.com/reference/android/renderscript/ScriptIntrinsicBlur). **Solution:** Let us know if this is an issue for you. This can probably be worked around by downscaling the shadow bitmap before applying the blur effect
+* **Corner radii can be inferred incorrectly:** We use `<ShadowedView>`'s style or the style of its direct child to infer the corner radii to apply. If your view hierarchy is more complex, corner radii might not be inferred correctly. **Solution:** rework your view hierarchy or pass the `borderRadius` directly to the `style` prop of `<ShadowedView>`.
+* **Shadow radius is limited to 25 or below:** This limitation comes from Renderscript's [blur effect](https://developer.android.com/reference/android/renderscript/ScriptIntrinsicBlur). **Solution:** Let us know if this is an issue for you. This can probably be worked around by downscaling the shadow bitmap before applying the blur effect.
 
 ## Benchmark
 
+The following table compares the memory consumption of `react-native-fast-shadow`, [react-native-androw](https://github.com/folofse/androw) and [react-native-shadow-2](https://github.com/SrBrahma/react-native-shadow-2) when rendering 100 150x200pt `<Image>` on a Pixel 2 with a 12pt radius shadow. The app was built using the debug variant and Hermes.
+
+| No shadow | react-native-shadow-2 | react-native-androw | react-native-fast-image |
+|-|-|-|-|
+| 117MB (ref) | 430MB **(+313MB)** | 403MB **(+286MB)** | 123MB **(+6MB)** |
