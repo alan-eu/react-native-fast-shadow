@@ -1,6 +1,6 @@
-# react-native-fast-shadow
+# 🌖 react-native-fast-shadow
 
-🌖 **Fast and high quality** Android shadows for React Native
+**Fast and high quality** Android shadows for React Native
 
 ## Why
 
