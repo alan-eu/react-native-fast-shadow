@@ -41,7 +41,9 @@ import { ShadowedView } from 'react-native-fast-shadow';
 
 <img width="198" src="https://user-images.githubusercontent.com/20420653/197513322-81c46d07-2f44-463b-86ef-86a4ad856146.png">
 
-The `shadowStyle()` utility can be used to make it easier to create shadow styles and to **keep shadows consistent** accross platforms.
+**shadowStyle():**
+
+The `shadowStyle()` utility can also be used to make it easier to create shadow styles and to **keep shadows consistent** accross platforms.
 It will create the same `style` prop as above, but will divide the shadow radius by 2 on iOS (as for some reasons, iOS shadows are too large by a factor of 2 when compared to design tools or to CSS's box-shadow model):
 
 ```jsx
