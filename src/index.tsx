@@ -1,1 +1,2 @@
-export { ShadowedView } from './ShadowedView';
+export * from './ShadowedView';
+export * from './utils';

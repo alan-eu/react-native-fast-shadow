@@ -40,6 +40,11 @@ public class FastShadowViewManager extends ReactViewManager {
     view.setOpacity(opacity);
   }
 
+  @ReactProp(name = "shadowRadius", defaultFloat = 3)
+  public void setShadowRadius(FastShadowView view, float radius) {
+    view.setRadius(radius);
+  }
+
   @ReactProp(name = "shadowOffset")
   public void setShadowOffset(FastShadowView view, ReadableMap offset) {
     if (offset == null) {
@@ -50,11 +55,6 @@ public class FastShadowViewManager extends ReactViewManager {
         (float) offset.getDouble("height")
       );
     }
-  }
-
-  @ReactProp(name = "shadowRadius", defaultFloat = 3)
-  public void setShadowRadius(FastShadowView view, float radius) {
-    view.setRadius(radius);
   }
 
   @ReactProp(name = "cornerRadii")

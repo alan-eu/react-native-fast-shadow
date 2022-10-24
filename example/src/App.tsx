@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { Image, View, ScrollView } from 'react-native';
-import { ShadowedView } from 'react-native-fast-shadow';
+import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
 import Animated, {
   useSharedValue,
   withTiming,
@@ -51,14 +51,12 @@ export default function App() {
               borderBottomRightRadius: 50,
               backgroundColor: '#dbfff2',
               borderColor: '#7af0c5',
-              borderWidth: 2,
-              shadowOpacity: 0.4,
-              shadowRadius: 12,
-              shadowOffset: {
-                width: 5,
-                height: 3,
-              },
               marginRight: 20,
+              ...shadowStyle({
+                opacity: 0.4,
+                radius: 12,
+                offset: [5, 3],
+              }),
             }}
           />
           <ShadowedView
@@ -67,13 +65,12 @@ export default function App() {
               height: 60,
               borderRadius: 30,
               backgroundColor: '#d6dbff',
-              shadowColor: '#221db2',
-              shadowOpacity: 0.8,
-              shadowRadius: 10,
-              shadowOffset: {
-                width: 0,
-                height: 3,
-              },
+              ...shadowStyle({
+                color: '#221db2',
+                opacity: 0.8,
+                radius: 10,
+                offset: [0, 3],
+              }),
             }}
           />
         </View>
@@ -92,12 +89,11 @@ export default function App() {
                 borderRadius: 20,
                 borderTopStartRadius: 50,
                 backgroundColor: '#ffe8e9',
-                shadowOpacity: 0.3,
-                shadowRadius: 25,
-                shadowOffset: {
-                  width: 5,
-                  height: 3,
-                },
+                ...shadowStyle({
+                  opacity: 0.3,
+                  radius: 25,
+                  offset: [5, 3],
+                }),
               },
             ]}
           />
@@ -106,12 +102,12 @@ export default function App() {
         <ShadowedView
           style={{
             alignSelf: 'flex-start',
-            shadowOpacity: 0.4,
-            shadowRadius: 25,
-            shadowOffset: {
-              width: 5,
-              height: 3,
-            },
+            ...shadowStyle({
+              color: '#221db2',
+              opacity: 0.4,
+              radius: 25,
+              offset: [5, 3],
+            }),
             marginBottom: 20,
           }}
         >
