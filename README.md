@@ -9,7 +9,8 @@ React Native only supports shadows on Android through the [elevation](https://re
 ## Features
 * 💆‍♀️ **Easy to use:** Drop-in replacement for the `<View>` component
 * ⚡️ **Performant:** Shadows can be applied to a large number of views without any signicant performance impact. It has been optimized for low memory consumption and fast rendering
-* 🎛 **Customizable:** Supports all the regular shadow props: `shadowRadius`, `shadowColor`, `shadowOpacity` and `shadowOffset`
+* 🎛 **Customizable:** Supports all the regular shadow props, `shadowRadius`, `shadowColor`, `shadowOpacity` and `shadowOffset`
+* 📱 **Universal:** Works on all platforms. On iOS and Web, `<ShadowedView>` is just an alias of `<View>`
 
 ## Getting started
 
@@ -69,8 +70,6 @@ On Android, shadow drawables are generated with the following process (see [Shad
 
 <img width="240" src="https://user-images.githubusercontent.com/20420653/197518195-2e13d80e-2a24-4e1c-ae53-444306733c83.gif">
 
-**Note:** on other platforms (iOS or web), `<ShadowedView>` is just an alias of React Native's `<View>` as these platforms already support shadows out of the box.
-
 ## Troubleshooting
 
 React-native-fast-shadow comes with the following limitations:
@@ -83,6 +82,6 @@ React-native-fast-shadow comes with the following limitations:
 
 The following table compares the memory consumption of `react-native-fast-shadow`, [react-native-androw](https://github.com/folofse/androw) and [react-native-shadow-2](https://github.com/SrBrahma/react-native-shadow-2) when rendering 100 150x200pt `<Image>` on a Pixel 2 with a 12pt radius shadow. The app was built using the debug variant and Hermes.
 
-| No shadow | react-native-shadow-2 | react-native-androw | react-native-fast-image |
+| No shadow | react-native-shadow-2 | react-native-androw | react-native-fast-shadow |
 |-|-|-|-|
 | 117MB (ref) | 430MB **(+313MB)** | 403MB **(+286MB)** | 123MB **(+6MB)** |
