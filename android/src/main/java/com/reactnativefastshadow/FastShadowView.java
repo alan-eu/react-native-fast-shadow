@@ -13,7 +13,7 @@ public class FastShadowView extends ReactViewGroup {
   private static ShadowCache shadowCache = new ShadowCache();
 
   private Shadow shadow;
-  private int color = 0x00000000;
+  private int color = 0xff000000;
   private float opacity = 0;
   private float radius = 0;
   private float offsetX = 0;

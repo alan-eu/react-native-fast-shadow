@@ -41,7 +41,10 @@ function getCornerRadiiFromStyle(
   ] as const;
 
   const s = StyleSheet.flatten(style) ?? {};
-  if (!s.backgroundColor && !borderRadiusProps.some((prop) => !!s[prop])) {
+  if (
+    !s.backgroundColor &&
+    !borderRadiusProps.some((prop) => s[prop] !== undefined)
+  ) {
     return undefined;
   }
 
