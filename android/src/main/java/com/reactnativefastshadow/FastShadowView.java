@@ -63,12 +63,6 @@ public class FastShadowView extends ReactViewGroup {
   }
 
   @Override
-  protected void onDraw(Canvas canvas) {
-    int width = Math.round(PixelUtil.toDIPFromPixel(getWidth()));
-    super.onDraw(canvas);
-  }
-
-  @Override
   public void draw(Canvas canvas) {
     // We override draw() and not onDraw() as we want to draw
     // our shadow behind the background drawable of the View.
