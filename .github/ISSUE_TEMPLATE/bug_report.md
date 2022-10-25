@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+<!-- Please search existing issues to avoid creating duplicates (opened and closed). -->
+
 ### Describe the bug
 <!-- A clear and concise description of what the bug is. -->
 <!-- Attach screenshots if possible. -->
