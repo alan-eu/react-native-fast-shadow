@@ -1,11 +1,13 @@
 ---
-name: Feature request
+name: "\U0001F680 Feature request"
 about: Suggest an idea for this project
 title: ''
-labels: ''
+labels: enhancement
 assignees: ''
 
 ---
+
+<!-- Please search existing issues to avoid creating duplicates (opened and closed). -->
 
 ### Is your feature request related to a problem? Please describe.
 <!-- A clear and concise description of what the problem is. Ex. I'm always frustrated when [...] -->
