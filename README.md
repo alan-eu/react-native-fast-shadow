@@ -1,5 +1,7 @@
 # 🌖 react-native-fast-shadow
 
+[![npm package](https://img.shields.io/npm/v/react-native-fast-shadow?color=brightgreen&label=npm%20package)](https://www.npmjs.com/package/react-native-fast-shadow)
+
 **Fast and high quality** Android shadows for React Native
 
 ## Why
@@ -59,14 +61,14 @@ import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
   <Image source={require('./kitten.png')} style={{ borderRadius: 30 }} />
 </ShadowedView>
 ```
- 
+
 ## How it works under the hood
 
 On Android, shadow drawables are generated with the following process (see [ShadowFactory.java](https://github.com/alan-eu/react-native-fast-shadow/blob/main/android/src/main/java/com/reactnativefastshadow/ShadowFactory.java) for more details):
 1. The shape of the view (rectangle with rounded corners) is painted in black on a canvas
 2. A gaussian blur is applied to the canvas with the given `shadowRadius` using the Renderscript API
 3. The drawable is then converted to a [NinePatchDrawable](https://developer.android.com/reference/android/graphics/drawable/NinePatchDrawable) to ensure that corners of the shadow won't be distorted when the view is resized. This way, we can generate only a small shadow drawable and **reuse it** for all views with the same border and blur radii.
-4. Finally, the drawable is rendered behind the view content: it is tinted with `shadowColor`/`shadowOpacity` and offseted according to `shadowOffset` 
+4. Finally, the drawable is rendered behind the view content: it is tinted with `shadowColor`/`shadowOpacity` and offseted according to `shadowOffset`
 
 **How NinePatchDrawable works** (notice how the corners are not streched when the drawable is resized):
 
