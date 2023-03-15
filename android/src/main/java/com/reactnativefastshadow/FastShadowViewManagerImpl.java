@@ -10,43 +10,31 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
 
-public class FastShadowViewManager extends ReactViewManager {
-  public static final String REACT_CLASS = "FastShadowView";
+public class FastShadowViewManagerImpl {
 
-  @Override
-  @NonNull
-  public String getName() {
-    return REACT_CLASS;
-  }
+  public static final String NAME = "FastShadowView";
 
-  @Override
-  public FastShadowView createViewInstance(ThemedReactContext context) {
+  public static FastShadowView createViewInstance(ThemedReactContext context) {
     return new FastShadowView(context);
   }
 
-  @Override
-  public void onDropViewInstance(@NonNull ReactViewGroup view) {
-    super.onDropViewInstance(view);
+  public static void onDropViewInstance(@NonNull ReactViewGroup view) {
     ((FastShadowView) view).releaseShadow();
   }
 
-  @ReactProp(name = "shadowColor", customType = "Color", defaultInt = Color.BLACK)
-  public void setShadowColor(FastShadowView view, int color) {
+  public static void setShadowColor(FastShadowView view, int color) {
     view.setColor(color);
   }
 
-  @ReactProp(name = "shadowOpacity", defaultFloat = 0)
-  public void setShadowOpacity(FastShadowView view, float opacity) {
+  public static void setShadowOpacity(FastShadowView view, float opacity) {
     view.setOpacity(opacity);
   }
 
-  @ReactProp(name = "shadowRadius", defaultFloat = 3)
-  public void setShadowRadius(FastShadowView view, float radius) {
+  public static void setShadowRadius(FastShadowView view, float radius) {
     view.setRadius(radius);
   }
 
-  @ReactProp(name = "shadowOffset")
-  public void setShadowOffset(FastShadowView view, ReadableMap offset) {
+  public static void setShadowOffset(FastShadowView view, ReadableMap offset) {
     if (offset == null) {
       view.resetOffset();
     } else {
@@ -57,8 +45,7 @@ public class FastShadowViewManager extends ReactViewManager {
     }
   }
 
-  @ReactProp(name = "cornerRadii")
-  public void setCornerRadii(FastShadowView view, ReadableMap borderRadius) {
+  public static void setCornerRadii(FastShadowView view, ReadableMap borderRadius) {
     view.setCornerRadii(new float[]{
       (float) borderRadius.getDouble("topLeft"),
       (float) borderRadius.getDouble("topRight"),
