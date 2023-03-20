@@ -3,7 +3,7 @@ GEM
   specs:
     CFPropertyList (3.0.5)
       rexml
-    activesupport (6.1.7.1)
+    activesupport (6.1.7.3)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -76,7 +76,7 @@ GEM
     ruby-macho (2.5.1)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
-    tzinfo (2.0.5)
+    tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     xcodeproj (1.21.0)
       CFPropertyList (>= 2.3.3, < 4.0)
@@ -85,7 +85,7 @@ GEM
       colored2 (~> 3.1)
       nanaimo (~> 0.3.0)
       rexml (~> 3.2.4)
-    zeitwerk (2.6.6)
+    zeitwerk (2.6.7)
 
 PLATFORMS
   ruby
