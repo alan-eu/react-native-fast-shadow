@@ -123,5 +123,10 @@
         }
       ]
     ]
+  },
+  "codegenConfig": {
+    "name": "FastShadowViewSpec",
+    "type": "components",
+    "jsSrcsDir": "./src"
   }
 }
