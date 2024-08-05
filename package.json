@@ -1,6 +1,6 @@
 {
   "name": "react-native-fast-shadow",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fast and high quality Android shadows for React Native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
