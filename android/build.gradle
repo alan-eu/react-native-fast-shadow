@@ -35,6 +35,7 @@ android {
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
   }
+
   buildTypes {
     release {
       minifyEnabled false
@@ -131,7 +132,7 @@ dependencies {
 if (isNewArchitectureEnabled()) {
   react {
     jsRootDir = file("../src/")
-    libraryName = "FastShadow"
+    libraryName = "FastShadowView"
     codegenJavaPackageName = "com.reactnativefastshadow"
   }
 }

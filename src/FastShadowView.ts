@@ -9,5 +9,8 @@ export type FastShadowViewProps = ViewProps & {
   };
 };
 
-export const FastShadowView =
-  requireNativeComponent<FastShadowViewProps>('FastShadowView');
+const isFabricEnabled = (global as any).nativeFabricUIManager != null;
+
+export const FastShadowView: React.FC<FastShadowViewProps> = isFabricEnabled
+  ? require('./FastShadowViewNativeComponent').default
+  : requireNativeComponent('FastShadowView');

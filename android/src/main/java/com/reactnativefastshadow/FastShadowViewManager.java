@@ -11,12 +11,13 @@ import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
 
 public class FastShadowViewManager extends ReactViewManager {
-  public static final String REACT_CLASS = "FastShadowView";
+
+  public static final String NAME = "FastShadowView";
 
   @Override
   @NonNull
   public String getName() {
-    return REACT_CLASS;
+    return FastShadowViewManager.NAME;
   }
 
   @Override

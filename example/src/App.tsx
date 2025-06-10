@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { Image, View, ScrollView } from 'react-native';
+import { Image, View, ScrollView, Text } from 'react-native';
 import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
 import Animated, {
   useSharedValue,
@@ -39,8 +39,11 @@ export default function App() {
     height: `${animatedHeight.value}%`,
   }));
 
+  const uiManager = (global as any)?.nativeFabricUIManager ? 'Fabric' : 'Paper';
+
   return (
     <ScrollView style={{ backgroundColor: 'white' }}>
+      <Text style={{fontSize: 18, fontWeight: 'bold'}}>This View is {uiManager}</Text>
       <View style={{ margin: 16 }}>
         <View style={{ flexDirection: 'row', marginBottom: 20 }}>
           <ShadowedView
