@@ -32,7 +32,7 @@ export default function App() {
       -1,
       true
     );
-  }, []);
+  }, [animatedHeight, animatedWidth]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     width: `${animatedWidth.value}%`,
