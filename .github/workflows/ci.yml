@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  install-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          cache: 'yarn'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            example/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}-
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: |
+          yarn install --cwd example --frozen-lockfile
+          yarn install --frozen-lockfile
+
+      - name: Upload workspace
+        uses: actions/upload-artifact@v3
+        with:
+          name: workspace
+          path: |
+            .
+            !node_modules/.cache
+          retention-days: 1
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    steps:
+      - name: Download workspace
+        uses: actions/download-artifact@v3
+        with:
+          name: workspace
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Lint files
+        run: yarn lint
+
+  typescript:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    steps:
+      - name: Download workspace
+        uses: actions/download-artifact@v3
+        with:
+          name: workspace
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Typecheck files
+        run: yarn typescript
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    steps:
+      - name: Download workspace
+        uses: actions/download-artifact@v3
+        with:
+          name: workspace
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Run unit tests
+        run: yarn test --coverage
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 30
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage/
+          fail_ci_if_error: false
+
+  build-package:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    steps:
+      - name: Download workspace
+        uses: actions/download-artifact@v3
+        with:
+          name: workspace
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Build package
+        run: yarn prepare
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: lib/
+          retention-days: 30
+
+  # Summary job that depends on all other jobs
+  ci-complete:
+    runs-on: ubuntu-latest
+    needs: [lint, typescript, unit-tests, build-package]
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.lint.result }}" == "failure" || "${{ needs.typescript.result }}" == "failure" || "${{ needs.unit-tests.result }}" == "failure" || "${{ needs.build-package.result }}" == "failure" ]]; then
+            echo "One or more jobs failed"
+            exit 1
+          else
+            echo "All jobs completed successfully"
+          fi
