@@ -2,13 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   install-dependencies:
     runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,18 +21,19 @@ jobs:
           node-version: '22'
           cache: 'yarn'
 
-      - name: Cache node modules
+      - name: Cache dependencies
+        id: cache-deps
         uses: actions/cache@v3
         with:
           path: |
             node_modules
             example/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-deps-${{ hashFiles('yarn.lock', 'example/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}-
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-deps-
 
       - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: |
           yarn install --cwd example --frozen-lockfile
           yarn install --frozen-lockfile
@@ -42,6 +45,7 @@ jobs:
           path: |
             .
             !node_modules/.cache
+            !example/node_modules/.cache
           retention-days: 1
 
   lint:
@@ -59,8 +63,15 @@ jobs:
           node-version: '22'
           cache: 'yarn'
 
-      - name: Install root dependencies
-        run: yarn install --frozen-lockfile
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            example/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('yarn.lock', 'example/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
 
       - name: Lint files
         run: yarn lint
@@ -80,8 +91,15 @@ jobs:
           node-version: '22'
           cache: 'yarn'
 
-      - name: Install root dependencies
-        run: yarn install --frozen-lockfile
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            example/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('yarn.lock', 'example/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
 
       - name: Typecheck files
         run: yarn typescript
@@ -101,8 +119,15 @@ jobs:
           node-version: '22'
           cache: 'yarn'
 
-      - name: Install root dependencies
-        run: yarn install --frozen-lockfile
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            example/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('yarn.lock', 'example/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
 
       - name: Run unit tests
         run: yarn test --coverage
@@ -135,8 +160,15 @@ jobs:
           node-version: '22'
           cache: 'yarn'
 
-      - name: Install root dependencies
-        run: yarn install --frozen-lockfile
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            example/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('yarn.lock', 'example/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
 
       - name: Build package
         run: yarn prepare
