@@ -36,7 +36,7 @@ jobs:
           yarn install --frozen-lockfile
 
       - name: Upload workspace
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: workspace
           path: |
@@ -49,7 +49,7 @@ jobs:
     needs: install-dependencies
     steps:
       - name: Download workspace
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: workspace
 
@@ -66,7 +66,7 @@ jobs:
     needs: install-dependencies
     steps:
       - name: Download workspace
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: workspace
 
@@ -83,7 +83,7 @@ jobs:
     needs: install-dependencies
     steps:
       - name: Download workspace
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: workspace
 
@@ -96,7 +96,7 @@ jobs:
         run: yarn test --coverage
 
       - name: Upload coverage artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/
@@ -113,7 +113,7 @@ jobs:
     needs: install-dependencies
     steps:
       - name: Download workspace
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: workspace
 
@@ -126,7 +126,7 @@ jobs:
         run: yarn prepare
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build
           path: lib/
