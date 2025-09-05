@@ -1,11 +1,12 @@
 import React from 'react';
 import {
   I18nManager,
-  StyleProp,
   StyleSheet,
+  StyleProp, // eslint-disable-line @typescript-eslint/no-unused-vars
   ViewProps,
-  ViewStyle,
+  ViewStyle, // eslint-disable-line @typescript-eslint/no-unused-vars
 } from 'react-native';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { FastShadowView, FastShadowViewProps } from './FastShadowView';
 
 export class ShadowedView extends React.Component<ViewProps> {

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ColorValue, Platform, ViewStyle } from 'react-native';
 
 export type ShadowParams = {
