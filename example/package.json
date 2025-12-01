@@ -25,7 +25,7 @@
     "@react-native/typescript-config": "0.74.84",
     "@types/react": "^18.2.6",
     "@types/react-test-renderer": "^18.0.0",
-    "babel-jest": "^29.6.3",
+    "babel-jest": "^30.0.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "patch-package": "^8.0.0",
     "pod-install": "^0.2.2",
