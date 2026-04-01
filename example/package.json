@@ -31,7 +31,7 @@
     "pod-install": "^0.2.2",
     "postinstall-postinstall": "^2.1.0",
     "react-test-renderer": "18.3.1",
-    "typescript": "5.0.4"
+    "typescript": "5.9.3"
   },
   "engines": {
     "node": ">=18"
